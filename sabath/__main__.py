@@ -12,19 +12,27 @@ import argparse
 
 
 def cmdparse(argv):
-    parser = argparse.ArgumentParser(prog=argv[0],
+    parser = argparse.ArgumentParser(
+        prog=argv[0],
         description="SABATH: Surrogate AI Benchmarking Applications' Testing Harness",
         epilog="The project is currently under development and new commands are possible in the future.",
         prefix_chars="-",
-        usage="%(prog)s <command> [sub-command] [options]")
+        usage="%(prog)s <action> [<command>] [options]")
 
-    subparser = parser.add_subparsers(help="commands for specific actionss", dest="command")
+    actparser = parser.add_subparsers(
+        title="Actions",
+        description="Desc",
+        help="names for specific actions", dest="action")
+
+    runparser = actparser.add_parser("run", help="Run a model with one of its datasets.")
 
     return  parser.parse_args(args=argv[1:])
 
 
 def main(argv):
     cmdargs = cmdparse(argv)
+    if cmdargs.action is None:
+        print("Please specify an action. Use '-h' flag for more informatin.")
     return 0
 
 
