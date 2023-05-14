@@ -17,6 +17,9 @@ def cmdparse(argv):
         epilog="The project is currently under development and new commands are possible in the future.",
         prefix_chars="-",
         usage="%(prog)s <command> [sub-command] [options]")
+
+    subparser = parser.add_subparsers(help="commands for specific actionss", dest="command")
+
     return  parser.parse_args(args=argv[1:])
 
 
