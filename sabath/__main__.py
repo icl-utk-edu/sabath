@@ -25,6 +25,11 @@ def cmdparse(argv):
         help="names for specific actions",
         dest="action")
 
+    # sub-parser for downloading
+    dwnparser = actparser.add_parser("download", help="Download a model or one of its datasets.")
+    dwnparser.add_argument("model", help="Name of the model to download.")
+    dwnparser.add_argument("dataset", nargs="?", help="Name of the model to download.")
+
     # sub-parser for running
     runparser = actparser.add_parser("run", help="Run a model with one of its datasets.")
     runparser.add_argument("model", help="Name of the model to run.")
