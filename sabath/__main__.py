@@ -21,7 +21,7 @@ def cmdparse(argv):
 
     actparser = parser.add_subparsers(
         title="Actions",
-        description="Desc",
+        description="Choose one of possible actions and their commands.",
         help="names for specific actions",
         dest="action")
 
