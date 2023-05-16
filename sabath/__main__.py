@@ -36,6 +36,8 @@ def main(argv):
     cmdargs = cmdparse(argv)
     if cmdargs.action is None:
         print("Please specify an action. Use '-h' flag for more informatin.")
+        return 127
+
     return 0
 
 
