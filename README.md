@@ -3,7 +3,8 @@
 SABATH provides benchmarking infrastructure for evaluating scientific ML/AI
 models. It contains support for scientific machine learning surrogates from
 external repositories such as
-[SciML-Bench](https://github.com/stfc-sciml/sciml-bench.git)).
+[SciML-Bench](https://github.com/stfc-sciml/sciml-bench).
+
 
 The software dependences are explicitly exposed in the surrogate model
 definition, which allows the use of advanced optimization, communication, and
