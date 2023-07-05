@@ -32,16 +32,16 @@ def cmdparse(argv):
         description="SABATH: Surrogate AI Benchmarking Applications' Testing Harness",
         epilog="The project is currently under development and new commands are possible in the future.",
         prefix_chars="-",
-        usage="%(prog)s <action> [<command>] [options]")
+        usage="%(prog)s <command> [<command>] [options]")
 
     # don't use pathlib to support Python 3.3 and earlier
     mainparser.add_argument("--root", type=str, help="Directory root for SABATH files")
 
     actparser = mainparser.add_subparsers(
         title="Actions",
-        description="Choose one of possible actions and their commands.",
-        help="names for specific actions",
-        dest="action")
+        description="Choose one of possible commands and their arguments.",
+        help="names for specific commands",
+        dest="command")
 
     parsers = dict()
     for cmd, hlp in (
