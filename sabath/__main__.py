@@ -74,8 +74,9 @@ def cmddispatch(args):
 
 def main(argv):
     cmdargs = cmdparse(argv)
-    if cmdargs.action is None:
-        print("Please specify an action. Use '-h' flag for more informatin.")
+    if cmdargs.command is None:
+        print("SABATH is Surrogate AI Benchmarking Applications' Testing Harness.\n"
+            "Please specify one of the available commands or use '-h' flag for more informatin.")
         return 127
 
     cmddispatch(cmdargs)
