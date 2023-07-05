@@ -29,6 +29,7 @@ def cmdparse(argv):
     for cmd, hlp in (
         ("download", "Download a model or one of its datasets"),
         ("run", "Run a model with one of its datasets"),
+        ("list", "List models and/or datasets"),
     ):
         parsers[cmd] = actparser.add_parser(cmd, help=hlp)
 
