@@ -12,14 +12,14 @@ import argparse
 
 
 def cmdparse(argv):
-    parser = argparse.ArgumentParser(
+    mainparser = argparse.ArgumentParser(
         prog=argv[0],
         description="SABATH: Surrogate AI Benchmarking Applications' Testing Harness",
         epilog="The project is currently under development and new commands are possible in the future.",
         prefix_chars="-",
         usage="%(prog)s <action> [<command>] [options]")
 
-    actparser = parser.add_subparsers(
+    actparser = mainparser.add_subparsers(
         title="Actions",
         description="Choose one of possible actions and their commands.",
         help="names for specific actions",
@@ -35,7 +35,7 @@ def cmdparse(argv):
     runparser.add_argument("model", help="Name of the model to run.")
     runparser.add_argument("dataset", help="Name of the dataset to run.")
 
-    return  parser.parse_args(args=argv[1:])
+    return mainparser.parse_args(args=argv[1:])
 
 
 def main(argv):
