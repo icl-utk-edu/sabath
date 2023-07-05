@@ -8,7 +8,12 @@ if sys.version_info < (3,):
     raise RuntimeError("Only Python 3+ supported")
 
 
-import argparse
+import argparse, os
+
+
+root = os.getenv("SABATH_ROOT")
+if root is None:
+    root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
 def cmdparse(argv):
@@ -18,6 +23,9 @@ def cmdparse(argv):
         epilog="The project is currently under development and new commands are possible in the future.",
         prefix_chars="-",
         usage="%(prog)s <action> [<command>] [options]")
+
+    # don't use pathlib to support Python 3.3 and earlier
+    mainparser.add_argument("--root", type=str, help="Directory root for SABATH files")
 
     actparser = mainparser.add_subparsers(
         title="Actions",
@@ -43,12 +51,24 @@ def cmdparse(argv):
     return mainparser.parse_args(args=argv[1:])
 
 
+def cmddispatch(args):
+    global root
+
+    if args.root:
+        root = args.root
+
+    if not os.path.exists(root):
+        print("Root path {} doesn't exist".format(root), file=sys.stderr)
+        raise FileNotFoundError
+
+
 def main(argv):
     cmdargs = cmdparse(argv)
     if cmdargs.action is None:
         print("Please specify an action. Use '-h' flag for more informatin.")
         return 127
 
+    cmddispatch(cmdargs)
     return 0
 
 
