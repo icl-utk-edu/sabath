@@ -45,15 +45,15 @@ def cmdparse(argv):
 
     parsers = dict()
     for cmd, hlp in (
-        ("download", "Download a model or one of its datasets"),
+        ("fetch", "Download a model or one of its datasets"),
         ("list", "List models or datasets"),
         ("info", "Show information about models or datasets"),
         ("run", "Run a model with one of its datasets"),
     ):
         parsers[cmd] = actparser.add_parser(cmd, help=hlp)
 
-    parsers["download"].add_argument("model", help="Name of the model to download.")
-    parsers["download"].add_argument("dataset", nargs="?", help="Name of the model to download.")
+    parsers["fetch"].add_argument("model", help="Name of the model to fetch.")
+    parsers["fetch"].add_argument("dataset", nargs="?", help="Name of the model to fetch.")
 
     parsers["run"].add_argument("model", help="Name of the model to run.")
     parsers["run"].add_argument("dataset", help="Name of the dataset to run.")
