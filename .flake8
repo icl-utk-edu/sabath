@@ -2,8 +2,8 @@
 # flake8 settings for SABATH core files
 
 [flake8]
-# line length
-ignore = E501
+# single line multi-import, line length
+ignore = E401,E501
 
 exclude =
 .git
