@@ -52,8 +52,8 @@ def cmdparse(argv):
     ):
         parsers[cmd] = actparser.add_parser(cmd, help=hlp)
 
-    parsers["fetch"].add_argument("model", help="Name of the model to fetch.")
-    parsers["fetch"].add_argument("dataset", nargs="?", help="Name of the model to fetch.")
+    parsers["fetch"].add_argument("model", nargs=1, help="Name of the model to fetch.")
+    parsers["fetch"].add_argument("dataset", nargs=1, help="Name of the dataset to fetch.")
 
     parsers["run"].add_argument("model", help="Name of the model to run.")
     parsers["run"].add_argument("dataset", help="Name of the dataset to run.")
