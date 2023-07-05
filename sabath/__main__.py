@@ -5,7 +5,7 @@
 import sys
 
 if sys.version_info < (3,):
-    raise RuntimeError("Only Python 3 supported")
+    raise RuntimeError("Only Python 3+ supported")
 
 
 import argparse
