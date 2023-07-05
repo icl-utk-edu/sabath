@@ -2,7 +2,17 @@
 # -*- coding: ascii -*-
 # vim: set fileencoding=ascii
 
+
+"""
+Main entry point into SABATH (SABATH: Surrogate AI Benchmarking Applications'
+Testing Harness).
+
+@author Piotr Luszczek
+"""
+
+
 import sys
+
 
 if sys.version_info < (3,):
     raise RuntimeError("Only Python 3+ supported")
