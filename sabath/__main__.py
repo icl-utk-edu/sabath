@@ -25,15 +25,18 @@ def cmdparse(argv):
         help="names for specific actions",
         dest="action")
 
-    # sub-parser for downloading
-    dwnparser = actparser.add_parser("download", help="Download a model or one of its datasets.")
-    dwnparser.add_argument("model", help="Name of the model to download.")
-    dwnparser.add_argument("dataset", nargs="?", help="Name of the model to download.")
+    parsers = dict()
+    for cmd, hlp in (
+        ("download", "Download a model or one of its datasets"),
+        ("run", "Run a model with one of its datasets"),
+    ):
+        parsers[cmd] = actparser.add_parser(cmd, help=hlp)
 
-    # sub-parser for running
-    runparser = actparser.add_parser("run", help="Run a model with one of its datasets.")
-    runparser.add_argument("model", help="Name of the model to run.")
-    runparser.add_argument("dataset", help="Name of the dataset to run.")
+    parsers["download"].add_argument("model", help="Name of the model to download.")
+    parsers["download"].add_argument("dataset", nargs="?", help="Name of the model to download.")
+
+    parsers["run"].add_argument("model", help="Name of the model to run.")
+    parsers["run"].add_argument("dataset", help="Name of the dataset to run.")
 
     return mainparser.parse_args(args=argv[1:])
 
