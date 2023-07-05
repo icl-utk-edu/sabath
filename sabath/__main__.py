@@ -12,6 +12,7 @@ Testing Harness).
 
 
 import sys
+from .commands import fetch
 
 
 if sys.version_info < (3,):
@@ -70,6 +71,9 @@ def cmddispatch(args):
     if not os.path.exists(root):
         print("Root path {} doesn't exist".format(root), file=sys.stderr)
         raise FileNotFoundError
+
+    if "fetch" == args.command:
+        commands.fetch(args)
 
 
 def main(argv):
