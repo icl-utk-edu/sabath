@@ -12,14 +12,14 @@ Testing Harness).
 
 
 import sys
-from .commands import dispatch, fetch
 
 
 if sys.version_info < (3,):
     raise RuntimeError("Only Python 3+ supported")
 
 
-import argparse, os
+import argparse
+from .commands import dispatch
 
 
 def cmdparse(argv):
@@ -61,7 +61,8 @@ def main(argv):
     cmdargs = cmdparse(argv)
     if cmdargs.command is None:
         print("SABATH is Surrogate AI Benchmarking Applications' Testing Harness.\n"
-            "Please specify one of the available commands or use '-h' flag for more informatin.")
+              "Please specify one of the available commands or "
+              "use '-h' flag for more informatin.")
         return 127
 
     dispatch(cmdargs)
