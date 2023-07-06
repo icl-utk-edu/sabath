@@ -63,6 +63,12 @@ def fetch(args):
                 tar("-C", cchpth, "-xf", lfname)
 
 
+def run(args):
+    model = json.load(open(repo_path("models", args.model[0])))
+    dataset = json.load(open(repo_path("datasets", args.dataset[0])))
+    model["run"]
+
+
 def dispatch(args):
     if args.root:
         sabath.root = args.root
@@ -73,3 +79,6 @@ def dispatch(args):
 
     if "fetch" == args.command:
         fetch(args)
+
+    elif "run" == args.command:
+        run(args)
