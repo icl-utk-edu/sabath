@@ -10,23 +10,56 @@ SABATH commands
 """
 
 
-import json, os, subprocess
+import json, os, subprocess, sys
 import sabath
 
 
 def git(cmd, *args):
     return subprocess.Popen(("git", cmd) + args, executable="git").wait()
 
+
+def tar(*args):
+    return subprocess.Popen(("tar",) + args, executable="tar").wait()
+
+
+def wget(url, *args):
+    return subprocess.Popen(("wget", url) + args, executable="wget").wait()
+
+
+def repo_path(m_or_d, name):
+    return os.path.join(sabath.root, "var", "sabath", "repos", "builtin", m_or_d, name[0], name + ".json")
+
+
+def cache_path(name, kind):
+    return os.path.join(sabath.cache, name[0], name, kind)
+
+
 def fetch(args):
     if args.model:
-        model = json.load(open(os.path.join(sabath.root, "var", "sabath", "repos", "builtin", "models", args.model[0],  args.model + ".json")))
+        model = json.load(open(repo_path("models", args.model)))
         if "git" in model:
-            cchpth = os.path.join(sabath.cache, args.model[0], args.model)
+            cchpth = cache_path(args.model, "git")
             if not os.path.exists(cchpth):
                 os.makedirs(cchpth, exist_ok=True)
 
             if git("clone", model["git"], cchpth):
                 raise RuntimeError
+
+    elif args.dataset:
+        dataset = json.load(open(repo_path("datasets", args.dataset)))
+        if "url" in dataset:
+            cchpth = cache_path(args.dataset, "url")
+            if not os.path.exists(cchpth):
+                os.makedirs(cchpth, exist_ok=True)
+
+            base, fname = os.path.split(dataset["url"])
+            lfname = os.path.join(cchpth, fname)
+
+            if not os.path.exists(lfname):
+                wget(dataset["url"], "-q", "-P", cchpth)
+
+            if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[-4:]):
+                if 0:tar("-xf", lfname)
 
 
 def dispatch(args):
