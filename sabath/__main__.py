@@ -51,8 +51,8 @@ def cmdparse(argv):
     parsers["fetch"].add_argument("--model", type=str, help="Name of the model to fetch.")
     parsers["fetch"].add_argument("--dataset", type=str, help="Name of the dataset to fetch.")
 
-    parsers["run"].add_argument("model", help="Name of the model to run.")
-    parsers["run"].add_argument("dataset", help="Name of the dataset to run.")
+    parsers["run"].add_argument("model", narg=1, help="Name of the model to run.")
+    parsers["run"].add_argument("dataset", narg=1, help="Name of the dataset to run.")
 
     return mainparser.parse_args(args=argv[1:])
 
