@@ -58,7 +58,8 @@ def fetch(args):
             if not os.path.exists(lfname):
                 wget(dataset["url"], "-q", "-P", cchpth)
 
-            if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[-4:]):
+            # if it's TAR file and output doesnt exist
+            if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
                 tar("-C", cchpth, "-xf", lfname)
 
 
