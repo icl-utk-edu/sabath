@@ -1,0 +1,12 @@
+{
+  "abstract" : "CosmoFlow implementats a 3D convolutional neural network for N-body cosmological simulation.",
+  "description": "CosmoFlow is written in Python on top of TensorFlow with the Keras API and uses Horovod for distributed training.",
+  "name" : "CosmoFlow",
+  "homepage" : "https://portal.nersc.gov/project/m3363/",
+  "references" : ["https://arxiv.org/abs/1808.04728"],
+
+  "git" : "https://github.com/sparticlesteve/cosmoflow-benchmark.git",
+  "forkts" : [
+    {"git": ["https://github.com/tokey-tahmid/cosmoflow-benchmark.git"]}
+  ]
+}
