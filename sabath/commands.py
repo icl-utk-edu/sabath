@@ -59,7 +59,7 @@ def fetch(args):
                 wget(dataset["url"], "-q", "-P", cchpth)
 
             if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[-4:]):
-                if 0:tar("-xf", lfname)
+                tar("-C", cchpth, "-xf", lfname)
 
 
 def dispatch(args):
