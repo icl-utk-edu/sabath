@@ -14,12 +14,10 @@ Testing Harness).
 import sys
 
 
-if sys.version_info < (3,):
-    raise RuntimeError("Only Python 3+ supported")
+if sys.version_info < (3,):  # detect wrong Python early with version 2/3 syntax
+    sys.stdout.write("Only Python 3+ supported.\n")
+    sys.exit(127)
 
 
-from .argvparse import main
-
-
-if "__main__" == __name__:
-    sys.exit(main(sys.argv))
+import sabath.argvparse
+sys.exit(sabath.argvparse.main(sys.argv))
