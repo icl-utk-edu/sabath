@@ -27,7 +27,7 @@ def wget(url, *args):
 
 
 def repo_path(m_or_d, name):
-    return os.path.join(sabath.root, "var", "sabath", "repos", "builtin", m_or_d, name[0], name + ".json")
+    return os.path.join(sabath.root, "var", "sabath", "assets", "sabath", m_or_d, name[0], name + ".json")
 
 
 def cache_path(name, kind):
