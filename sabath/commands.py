@@ -10,7 +10,7 @@ SABATH commands
 """
 
 
-import json, os, subprocess, sys, urllib.parse
+import json, logging, os, subprocess, sys, urllib.parse
 import sabath
 
 
@@ -48,7 +48,7 @@ def fetch(args):
 
             else:
                 if git("clone", model["git"], os.path.join(cchpth, repo)):
-                    print("Failed cloning repo for model " + args.model)
+                    logging.error("Failed cloning repo for model " + args.model)
                     return 127
 
     elif args.dataset:
