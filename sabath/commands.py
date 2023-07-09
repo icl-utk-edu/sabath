@@ -10,7 +10,7 @@ SABATH commands
 """
 
 
-import json, os, subprocess, sys
+import json, os, subprocess, sys, urllib.parse
 import sabath
 
 
@@ -42,8 +42,14 @@ def fetch(args):
             if not os.path.exists(cchpth):
                 os.makedirs(cchpth, exist_ok=True)
 
-            if git("clone", model["git"], cchpth):
-                raise RuntimeError
+            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]).path)[0])[-1]
+            if os.path.exists(os.path.join(cchpth, repo, ".git")):
+                print("Repo directory for {} already exists in {}".format(args.model, os.path.join(cchpth, repo, ".git")))
+
+            else:
+                if git("clone", model["git"], os.path.join(cchpth, repo)):
+                    print("Failed cloning repo for model " + args.model)
+                    return 127
 
     elif args.dataset:
         dataset = json.load(open(repo_path("datasets", args.dataset)))
@@ -61,6 +67,8 @@ def fetch(args):
             # if it's TAR file and output doesnt exist
             if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
                 tar("-C", cchpth, "-xf", lfname)
+
+    return 0
 
 
 def run(args):
