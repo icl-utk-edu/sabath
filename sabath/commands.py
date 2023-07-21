@@ -77,9 +77,31 @@ def run(args):
     model["run"]
 
 
+def set_cache(pth):
+    if pth:
+        for tst, msg in (
+            (os.path.exists(pth), "doesn't exist"),
+            (os.path.isdir(pth), "is not directory"),
+            (os.access(pth, os.R_OK), "is not readable"),
+            (os.access(pth, os.W_OK), "is not writeable"),
+            (os.access(pth, os.X_OK), "is not executable"),
+        ):
+            if not tst:
+                print("Cache path {}, ignoring {}".format(msg, pth),
+                    file=sys.stderr)
+                break
+
+        else:
+            logging.info("Cache directory set to " + pth)
+            sabath.cache = pth
+
+
 def dispatch(args):
     if args.root:
         sabath.root = args.root
+
+    if args.cache:
+        set_cache(args.cache)
 
     if not os.path.exists(sabath.root):
         print("Root path {} doesn't exist".format(sabath.root), file=sys.stderr)

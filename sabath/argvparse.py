@@ -25,6 +25,7 @@ def parse(argv):
 
     # don't use pathlib to support Python 3.3 and earlier
     mainparser.add_argument("--root", type=str, help="Directory root for SABATH code files (by default, it is discovered from SABATH invocation)")
+    mainparser.add_argument("--cache", type=str, help="Directory for SABATH cache files (models and datasets)")
 
     actparser = mainparser.add_subparsers(
         title="Actions",
