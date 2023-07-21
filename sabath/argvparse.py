@@ -53,9 +53,9 @@ def parse(argv):
 def main(argv):
     args = parse(argv)
     if args.command is None:
-        print("SABATH is Surrogate AI Benchmarking Applications' Testing Harness.\n"
+        print("SABATH is Surrogate AI Benchmarking Applications' Testing Harness.\n\n"
               "Please specify one of the available commands or "
-              "use '-h' flag for more informatin.")
+              "use '-h' flag for more information.")
         return 127
 
     dispatch(args)
