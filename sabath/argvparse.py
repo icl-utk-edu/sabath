@@ -24,7 +24,7 @@ def parse(argv):
         usage="%(prog)s <command> [<command>] [options]")
 
     # don't use pathlib to support Python 3.3 and earlier
-    mainparser.add_argument("--root", type=str, help="Directory root for SABATH files")
+    mainparser.add_argument("--root", type=str, help="Directory root for SABATH code files (by default, it is discovered from SABATH invocation)")
 
     actparser = mainparser.add_subparsers(
         title="Actions",
