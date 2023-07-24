@@ -59,5 +59,4 @@ def main(argv):
               "use '-h' flag for more information.")
         return 127
 
-    dispatch(args)
-    return 0
+    return dispatch(args)

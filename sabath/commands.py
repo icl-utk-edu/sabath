@@ -68,6 +68,10 @@ def fetch(args):
             if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
                 tar("-C", cchpth, "-xf", lfname)
 
+    else:
+        print("Please secify what to fetch: model or data set.")
+        return 127
+
     return 0
 
 
@@ -75,6 +79,7 @@ def run(args):
     model = json.load(open(repo_path("models", args.model[0])))
     dataset = json.load(open(repo_path("datasets", args.dataset[0])))
     model["run"]
+    return 127
 
 
 def set_cache(pth):
@@ -105,10 +110,12 @@ def dispatch(args):
 
     if not os.path.exists(sabath.root):
         print("Root path {} doesn't exist".format(sabath.root), file=sys.stderr)
-        raise FileNotFoundError
+        return 127
 
     if "fetch" == args.command:
-        fetch(args)
+        return fetch(args)
 
     elif "run" == args.command:
-        run(args)
+        return run(args)
+
+    return 0
