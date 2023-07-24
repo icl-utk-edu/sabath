@@ -10,7 +10,7 @@ SABATH commands
 """
 
 
-import json, logging, os, subprocess, sys, urllib.parse
+import hashlib, json, logging, os, subprocess, shutil, sys, urllib.parse
 import sabath
 
 
@@ -31,14 +31,15 @@ def repo_path(m_or_d, name):
 
 
 def cache_path(name, kind):
-    return os.path.join(sabath.cache, name[0], name, kind)
+    dgst = hashlib.sha256(name.encode()).hexdigest()
+    return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
 
 def fetch(args):
     if args.model:
         model = json.load(open(repo_path("models", args.model)))
         if "git" in model:
-            cchpth = cache_path(args.model, "git")
+            cchpth = cache_path(model["git"], "git")
             if not os.path.exists(cchpth):
                 os.makedirs(cchpth, exist_ok=True)
 
@@ -54,19 +55,30 @@ def fetch(args):
     elif args.dataset:
         dataset = json.load(open(repo_path("datasets", args.dataset)))
         if "url" in dataset:
-            cchpth = cache_path(args.dataset, "url")
-            if not os.path.exists(cchpth):
-                os.makedirs(cchpth, exist_ok=True)
+            cchpth = cache_path(dataset["url"], "url")
+            os.makedirs(cchpth, exist_ok=True)
 
             base, fname = os.path.split(dataset["url"])
             lfname = os.path.join(cchpth, fname)
 
-            if not os.path.exists(lfname):
-                wget(dataset["url"], "-q", "-P", cchpth)
+            if args.link:
+                # create soft link (hard links don't work across devices and/or mount points)
+                os.symlink(args.link, os.path.join(cchpth, lfname))
+
+            elif args.path:
+                shutil.copy(args.path, cchpth, follow_symlinks=False)
+
+            else:  # must attemp downloading
+                if not os.path.exists(lfname):
+                    wget(dataset["url"], "-q", "-P", cchpth)
 
             # if it's TAR file and output doesnt exist
             if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
                 tar("-C", cchpth, "-xf", lfname)
+
+        else:
+            print("Missing URL for data set", args.dataset)
+            return 127
 
     else:
         print("Please secify what to fetch: model or data set.")

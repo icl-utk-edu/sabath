@@ -42,8 +42,13 @@ def parse(argv):
     ):
         parsers[cmd] = actparser.add_parser(cmd, help=hlp)
 
-    parsers["fetch"].add_argument("-m", "--model", type=str, help="Name of the model to fetch.")
-    parsers["fetch"].add_argument("-d", "--dataset", type=str, help="Name of the dataset to fetch.")
+    for s, l, h in (
+        ("-m", "--model", "Name of the model to fetch"),
+        ("-d", "--dataset", "Name of the dataset to fetch"),
+        ("-p", "--path", "Local path to a model or data set (to avoid downloading over the network)"),
+        ("-l", "--link", "Specifies a path to model or data set is available locally and only a soft link is created to it (don't make copy of the data)"),
+    ):
+        parsers["fetch"].add_argument(s, l, type=str, help=h)
 
     parsers["run"].add_argument("model", nargs=1, help="Name of the model to run.")
     parsers["run"].add_argument("dataset", nargs=1, help="Name of the dataset to run.")
