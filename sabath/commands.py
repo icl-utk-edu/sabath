@@ -34,6 +34,7 @@ def cache_path(name, kind):
     dgst = hashlib.sha256(name.encode()).hexdigest()
     return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
+
 def _fetch_cached(args, dataset):
     cchpth = cache_path(dataset["url"], "url")
     os.makedirs(cchpth, exist_ok=True)
@@ -79,12 +80,12 @@ def fetch(args):
         dataset = json.load(open(repo_path("datasets", args.dataset)))
         missing_url = False
         if isinstance(dataset, dict):
-            if "url" in dataset: # Single dict with url
+            if "url" in dataset:  # single dict with url
                 _fetch_cached(args, dataset)
             else:
                 print("Missing URL for data set", args.dataset)
                 missing_url = True
-        else: # Must be a listlike then
+        else:  # must be a list-like then
             # TODO: support links and copying for multiple files
             if args.link or args.path:
                 print("Using links or copying for multiple file datasets is not implemented yet")
@@ -94,7 +95,7 @@ def fetch(args):
                 if 'url' in d:
                     _fetch_cached(args, d)
                 else:
-                    print(f"Missing URL for data set {args.dataset} file {i}")
+                    print("Missing URL for data set", args.dataset,  "file", i)
                     missing_url = True
         if missing_url:
             return 127
