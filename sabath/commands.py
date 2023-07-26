@@ -54,7 +54,8 @@ def _fetch_cached(args, dataset):
 
     # if it's TAR file and output doesnt exist
     if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
-        tar("-C", cchpth, "-xf", lfname)
+        shutil.unpack_archive(lfname, cchpth, format="tar")
+        # tar("-C", cchpth, "-xf", lfname)
 
 
 def fetch(args):
