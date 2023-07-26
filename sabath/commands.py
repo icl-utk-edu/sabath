@@ -44,7 +44,10 @@ def _fetch_cached(args, dataset):
 
     if args.link:
         # create soft link (hard links don't work across devices and/or mount points)
-        os.symlink(args.link, os.path.join(cchpth, lfname))
+        try:
+            os.symlink(args.link, os.path.join(cchpth, lfname))
+        except FileExistsError:
+            print("File or link already exists:", lfname)
 
     elif args.path:
         shutil.copy(args.path, cchpth, follow_symlinks=False)
