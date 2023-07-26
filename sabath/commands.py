@@ -34,6 +34,28 @@ def cache_path(name, kind):
     dgst = hashlib.sha256(name.encode()).hexdigest()
     return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
+def _fetch_cached(args, dataset):
+    cchpth = cache_path(dataset["url"], "url")
+    os.makedirs(cchpth, exist_ok=True)
+
+    base, fname = os.path.split(dataset["url"])
+    lfname = os.path.join(cchpth, fname)
+
+    if args.link:
+        # create soft link (hard links don't work across devices and/or mount points)
+        os.symlink(args.link, os.path.join(cchpth, lfname))
+
+    elif args.path:
+        shutil.copy(args.path, cchpth, follow_symlinks=False)
+
+    else:  # must attemp downloading
+        if not os.path.exists(lfname):
+            wget(dataset["url"], "-q", "-P", cchpth)
+
+    # if it's TAR file and output doesnt exist
+    if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
+        tar("-C", cchpth, "-xf", lfname)
+
 
 def fetch(args):
     if args.model:
@@ -54,30 +76,26 @@ def fetch(args):
 
     elif args.dataset:
         dataset = json.load(open(repo_path("datasets", args.dataset)))
-        if "url" in dataset:
-            cchpth = cache_path(dataset["url"], "url")
-            os.makedirs(cchpth, exist_ok=True)
-
-            base, fname = os.path.split(dataset["url"])
-            lfname = os.path.join(cchpth, fname)
-
-            if args.link:
-                # create soft link (hard links don't work across devices and/or mount points)
-                os.symlink(args.link, os.path.join(cchpth, lfname))
-
-            elif args.path:
-                shutil.copy(args.path, cchpth, follow_symlinks=False)
-
-            else:  # must attemp downloading
-                if not os.path.exists(lfname):
-                    wget(dataset["url"], "-q", "-P", cchpth)
-
-            # if it's TAR file and output doesnt exist
-            if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
-                tar("-C", cchpth, "-xf", lfname)
-
-        else:
-            print("Missing URL for data set", args.dataset)
+        missing_url = False
+        if isinstance(dataset, dict):
+            if "url" in dataset: # Single dict with url
+                _fetch_cached(args, dataset)
+            else:
+                print("Missing URL for data set", args.dataset)
+                missing_url = True
+        else: # Must be a listlike then
+            # TODO: support links and copying for multiple files
+            if args.link or args.path:
+                print("Using links or copying for multiple file datasets is not implemented yet")
+                return 127
+            ###
+            for i, d in enumerate(dataset):
+                if 'url' in d:
+                    _fetch_cached(args, d)
+                else:
+                    print(f"Missing URL for data set {args.dataset} file {i}")
+                    missing_url = True
+        if missing_url:
             return 127
 
     else:
