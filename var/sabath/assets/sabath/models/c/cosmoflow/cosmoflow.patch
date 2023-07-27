@@ -1,0 +1,44 @@
+diff --git a/configs/cosmo.yaml b/configs/cosmo.yaml
+index 675e32f..d164966 100644
+--- a/configs/cosmo.yaml
++++ b/configs/cosmo.yaml
+@@ -8,10 +8,10 @@ mlperf:
+ 
+ data:
+     name: cosmo
+-    data_dir: /global/cscratch1/sd/sfarrell/cosmoflow-benchmark/data/cosmoUniverse_2019_05_4parE_tf_v2
++    data_dir: /path/to/cosmoUniverse_2019_05_4parE_tf_v2_mini/ #Update path according where your dataset is located
+     compression: GZIP
+-    n_train: 524288
+-    n_valid: 65536
++    n_train: 1024
++    n_valid: 1024
+     sample_shape: [128, 128, 128, 4]
+     batch_size: 4
+     n_epochs: 128
+diff --git a/data/cosmo.py b/data/cosmo.py
+index 8213446..e30f826 100644
+--- a/data/cosmo.py
++++ b/data/cosmo.py
+@@ -81,7 +81,7 @@ def construct_dataset(file_dir, n_samples, batch_size, n_epochs,
+                       sample_shape, samples_per_file=1, n_file_sets=1,
+                       shard=0, n_shards=1, apply_log=True, compression=None,
+                       randomize_files=False, shuffle=False, shuffle_buffer_size=0,
+-                      n_parallel_reads=tf.data.AUTOTUNE, prefetch=tf.data.AUTOTUNE):
++                      n_parallel_reads=tf.data.experimental.AUTOTUNE, prefetch=tf.data.experimental.AUTOTUNE):
+     """This function takes a folder with files and builds the TF dataset.
+ 
+     It ensures that the requested sample counts are divisible by files,
+diff --git a/train.py b/train.py
+index 1a375fc..9056cf3 100644
+--- a/train.py
++++ b/train.py
+@@ -228,7 +228,7 @@ def main():
+         logging.info('Configuration: %s', config)
+ 
+     # Random seeding
+-    tf.keras.utils.set_random_seed(args.seed)
++    tf.random.set_seed(args.seed)
+ 
+     # Enable deterministic ops - should ensure single-gpu determinism but
+     # doesn't seem to guarantee determinism with Horovod distributed training
