@@ -35,26 +35,26 @@ def cache_path(name, kind):
     return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
 
-def _fetch_cached(args, dataset):
-    cchpth = cache_path(dataset["url"], "url")
+def fetch_fragment(fragment, link=None, path=None):
+    cchpth = cache_path(fragment["url"], "url")
     os.makedirs(cchpth, exist_ok=True)
 
-    base, fname = os.path.split(dataset["url"])
+    base, fname = os.path.split(fragment["url"])
     lfname = os.path.join(cchpth, fname)
 
-    if args.link:
+    if link:
         # create soft link (hard links don't work across devices and/or mount points)
         try:
-            os.symlink(args.link, os.path.join(cchpth, lfname))
+            os.symlink(link, os.path.join(cchpth, lfname))
         except FileExistsError:
             print("File or link already exists:", lfname)
 
-    elif args.path:
-        shutil.copy(args.path, cchpth, follow_symlinks=False)
+    elif path:
+        shutil.copy(path, cchpth, follow_symlinks=False)
 
     else:  # must attemp downloading
         if not os.path.exists(lfname):
-            wget(dataset["url"], "-q", "-P", cchpth)
+            wget(fragment["url"], "-q", "-P", cchpth)
 
     # if it's TAR file and output doesnt exist
     if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
@@ -80,28 +80,39 @@ def fetch(args):
                     return 127
 
     elif args.dataset:
+        if args.link and args.path:
+            print("Both links and paths specified. Ignoring paths and using links only.")
+
         dataset = json.load(open(repo_path("datasets", args.dataset)))
+
+        fragments = dataset["fragments"]
+        for attr in "link", "path":
+            lorp = getattr(args, attr)
+            if lorp:
+                if len(lorp) != len(fragments):
+                    print("Mismatch in number of links/paths:", len(lorp), "and data set fragments:", len(fragments))
+                    return 127
+                break
+        else:
+            attr = ""  # no links or paths options found in arguments
+
+        d = dict()
         missing_url = False
-        if isinstance(dataset, dict):
-            if "url" in dataset:  # single dict with url
-                _fetch_cached(args, dataset)
+        for i, fragment in enumerate(fragments):
+            if 'url' in fragment:
+                if attr:
+                    d[attr] = getattr(args, attr)[i]
+                fetch_fragment(fragment, **d)
+
             else:
-                print("Missing URL for data set", args.dataset)
+                print("Missing URL for data set", "'" + args.dataset + "'", "fragment", i,
+                    "" if "id" not in fragment else "'" + fragment["id"] + "'")
                 missing_url = True
-        else:  # must be a list-like then
-            # TODO: support links and copying for multiple files
-            if args.link or args.path:
-                print("Using links or copying for multiple file datasets is not implemented yet")
-                return 127
-            ###
-            for i, d in enumerate(dataset):
-                if 'url' in d:
-                    _fetch_cached(args, d)
-                else:
-                    print("Missing URL for data set", args.dataset,  "file", i)
-                    missing_url = True
+
         if missing_url:
             return 127
+
+        return 0
 
     else:
         print("Please secify what to fetch: model or data set.")

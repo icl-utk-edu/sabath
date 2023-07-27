@@ -1,22 +1,24 @@
-[
+{
+  "name": "ptychonn_20191008_39",
+  "fragments": [
     {
-        "name": "ptychonn_20191008_39_labels",
-        "url": "https://github.com/mcherukara/PtychoNN/raw/master/data/20191008_39_amp_pha_10nm_full.npy",
-        "size": 849379456,
-        "checksum": {
-            "md5": "bbaee965b410204f1048a3ef5711855a",
-            "sha1": "1eb4dd4b0b3131a3ebe47c10e6824642450bce30",
-            "sha256": "2f0740e8aeb1d3866d6dfecd58e4d4aa5553e0ca53fe1ebbf6df1e82271d6395"
-        }
-    },
-    {
-        "name": "ptychonn_20191008_39_data",
-        "url": "https://github.com/mcherukara/PtychoNN/raw/master/data/20191008_39_diff.npz",
-        "size": 588494609,
-        "checksum": {
-            "md5": "6ae7c56c85bbc96acfed4449ac45e34d",
-            "sha1": "a6fe41753eceaeba01669f1c1ea7bf8cefc17bd9",
-            "sha256": "ac298377ea7885902a91ba098bd00307518743c47a5d57396e435f31e0f9beca"
-        }
+      "id": "labels",
+      "url": "https://github.com/mcherukara/PtychoNN/raw/master/data/20191008_39_amp_pha_10nm_full.npy",
+      "size": 849379456,
+      "checksum": {
+          "md5": "bbaee965b410204f1048a3ef5711855a",
+          "sha1": "1eb4dd4b0b3131a3ebe47c10e6824642450bce30",
+          "sha256": "2f0740e8aeb1d3866d6dfecd58e4d4aa5553e0ca53fe1ebbf6df1e82271d6395"
+      }
+    },{
+      "id": "data",
+      "url": "https://github.com/mcherukara/PtychoNN/raw/master/data/20191008_39_diff.npz",
+      "size": 588494609,
+      "checksum": {
+          "md5": "6ae7c56c85bbc96acfed4449ac45e34d",
+          "sha1": "a6fe41753eceaeba01669f1c1ea7bf8cefc17bd9",
+          "sha256": "ac298377ea7885902a91ba098bd00307518743c47a5d57396e435f31e0f9beca"
+      }
     }
-]
+  ]
+}
