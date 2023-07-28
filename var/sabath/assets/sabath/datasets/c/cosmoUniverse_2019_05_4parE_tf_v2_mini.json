@@ -1,10 +1,15 @@
 {
   "name" : "cosmoUniverse_2019_05_4parE_tf_v2_mini",
-  "url" : "https://portal.nersc.gov/project/dasrepo/cosmoflow-benchmark/cosmoUniverse_2019_05_4parE_tf_v2_mini.tar",
-  "size" : 5943306240,
-  "checksum" : {
-      "md5" : "117fe38c073b34d79950be871f7e2c0c",
-      "sha1" : "f08fe0884f4e151ab1944b3cee8da828e0091f1c",
-      "sha256" : "8bf2edfa0f7d4acf4ac17585f05ab8f9ab8ad05f6b0dde24f7e555d5a2704c68"
-  }
+  "fragments" : [
+    {
+      "id" : "main",
+      "url" : "https://portal.nersc.gov/project/dasrepo/cosmoflow-benchmark/cosmoUniverse_2019_05_4parE_tf_v2_mini.tar",
+      "size" : 5943306240,
+      "checksum" : {
+          "md5" : "117fe38c073b34d79950be871f7e2c0c",
+          "sha1" : "f08fe0884f4e151ab1944b3cee8da828e0091f1c",
+          "sha256" : "8bf2edfa0f7d4acf4ac17585f05ab8f9ab8ad05f6b0dde24f7e555d5a2704c68"
+      }
+    }
+  ]
 }

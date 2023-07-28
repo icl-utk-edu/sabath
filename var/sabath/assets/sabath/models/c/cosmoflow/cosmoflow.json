@@ -1,15 +1,26 @@
 {
-  "abstract" : "CosmoFlow implementats a 3D convolutional neural network for N-body cosmological simulation.",
+  "abstract" : "CosmoFlow implements a 3D convolutional neural network for N-body cosmological simulation.",
   "description": "CosmoFlow is written in Python on top of TensorFlow with the Keras API and uses Horovod for distributed training.",
   "name" : "CosmoFlow",
   "homepage" : "https://portal.nersc.gov/project/m3363/",
   "references" : ["https://arxiv.org/abs/1808.04728"],
-
+  "requirements": {
+    "python": ">=3.8",
+    "pip": ["pandas", "wandb", "tensorflow==2.10.0", "horovod"],
+    "system_modules": ["cmake/3.26.3", "cuda/11.8.0", "gcc/11.3.0"]
+  },
+  "env_vars": {
+    "HOROVOD_CUDA_HOME": "$CUDA_HOME",
+    "HOROVOD_WITH_TENSORFLOW": "1"
+  },
   "git" : "https://github.com/sparticlesteve/cosmoflow-benchmark.git",
   "forkts" : [
     {"git": ["https://github.com/tokey-tahmid/cosmoflow-benchmark.git"]}
   ],
   "run" : {
-      "cosmoUniverse_2019_05_4parE_tf_v2" : "{python} train.py configs/cosmo.yaml"
+      "cosmoUniverse_2019_05_4parE_tf_v2" : [
+        "sed -i 's!data_dir: .*!data_dir: \"{sabath.dataset}/cosmoUniverse_2019_05_4parE_tf_v2_mini\"!' configs/cosmo.yaml",
+        "{python} train.py configs/cosmo.yaml"
+    ]
   }
 }
