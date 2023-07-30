@@ -4,7 +4,7 @@
   "name" : "PtychoNN",
   "homepage" : "https://www.anl.gov/psc/ptychonn-uses-neural-networks-for-faster-xray-imaging",
   "references" : ["https://doi.org/10.1063/5.0013065", "https://github.com/mcherukara/PtychoNN"],
-  "git" : "https://github.com/Presciman/PtychoNN-torch",
+  "git" : {"origin": "https://github.com/Presciman/PtychoNN-torch"},
   "run" : {
     "ptychonn_20191008_39" : [
       "sed -i 's!data_path =.*!data_path = \"{sabath.dataset}/20191008_39_diff.npz\"!' train_mpi.py",

@@ -62,22 +62,42 @@ def fetch_fragment(fragment, link=None, path=None):
         # tar("-C", cchpth, "-xf", lfname)
 
 
+def hashable(dct):
+    "Create hashable string by  normalizing a JSON-serializable dictionary"
+    # return the same dictionary with sorted keys
+    return json.dumps({k: dct[k] for k in sorted(dct.keys())})
+
+
 def fetch(args):
     if args.model:
         model = json.load(open(repo_path("models", args.model)))
         if "git" in model:
-            cchpth = cache_path(model["git"], "git")
+            cchpth = cache_path(hashable(model["git"]), "git")
             if not os.path.exists(cchpth):
                 os.makedirs(cchpth, exist_ok=True)
 
-            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]).path)[0])[-1]
-            if os.path.exists(os.path.join(cchpth, repo, ".git")):
-                print("Repo directory for {} already exists in {}".format(args.model, os.path.join(cchpth, repo, ".git")))
+            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]["origin"]).path)[0])[-1]
+            repopath = os.path.join(cchpth, repo)
+            if os.path.exists(os.path.join(repopath, ".git")):
+                print("Repo directory for {} already exists in {}".format(args.model, os.path.join(repopath, ".git")))
 
             else:
-                if git("clone", model["git"], os.path.join(cchpth, repo)):
+                if git("clone", model["git"]["origin"], "--tags", os.path.join(cchpth, repo)):
                     logging.error("Failed cloning repo for model " + args.model)
                     return 127
+
+                else:  # cloning was successful
+                    for dtl, prf in (("branch", ""), ("tag", "tags/"), ("commit", "")):
+                        if dtl in model["git"]:  # extra detail present
+                            curdir = os.getcwd()
+                            os.chdir(repopath)
+                            retcod = git("checkout", prf + model["git"][dtl])
+                            os.chdir(curdir)
+                            if retcod:
+                                print("Checking out {} {} for model {} failed.".format(dtl, model["git"][dtl], args.model))
+                                return 127
+                            else:
+                                print("Checked out", dtl, model["git"][dtl])
 
     elif args.dataset:
         if args.link and args.path:
