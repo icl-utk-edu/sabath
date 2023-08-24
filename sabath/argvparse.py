@@ -53,6 +53,7 @@ def parse(argv):
 
     parsers["run"].add_argument("model", nargs=1, help="Name of the model to run.")
     parsers["run"].add_argument("dataset", nargs=1, help="Name of the dataset to run.")
+    parsers["run"].add_argument("-n", '--dryrun', action='store_true', help="Dry run, just display commands")
 
     return mainparser.parse_args(args=argv[1:])
 
