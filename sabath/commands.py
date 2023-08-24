@@ -8,11 +8,10 @@ SABATH commands
 
 @author Piotr Luszczek
 """
-
-
-import hashlib, json, logging, os, subprocess, shutil, sys, urllib.parse
+import json, logging, os, subprocess, shutil, sys, urllib.parse
 import sabath
-
+from .executors import ContextExecutor
+from .utils import cache_path, get_fragment_cache_path, get_model_repo_cache_path
 
 def git(cmd, *args):
     return subprocess.Popen(("git", cmd) + args, executable="git").wait()
@@ -30,16 +29,8 @@ def repo_path(m_or_d, name):
     return os.path.join(sabath.root, "var", "sabath", "assets", "sabath", m_or_d, name[0], name + ".json")
 
 
-def cache_path(name, kind):
-    dgst = hashlib.sha256(name.encode()).hexdigest()
-    return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
-
-
 def fetch_fragment(fragment, link=None, path=None):
-    cchpth = cache_path(fragment["url"], "url")
-    os.makedirs(cchpth, exist_ok=True)
-
-    base, fname = os.path.split(fragment["url"])
+    cchpth, fname = get_fragment_cache_path(fragment, create=True)
     lfname = os.path.join(cchpth, fname)
 
     if link:
@@ -61,22 +52,11 @@ def fetch_fragment(fragment, link=None, path=None):
         shutil.unpack_archive(lfname, cchpth, format="tar")
         # tar("-C", cchpth, "-xf", lfname)
 
-
-def hashable(dct):
-    "Create hashable string by  normalizing a JSON-serializable dictionary"
-    # return the same dictionary with sorted keys
-    return json.dumps({k: dct[k] for k in sorted(dct.keys())})
-
-
 def fetch(args):
     if args.model:
         model = json.load(open(repo_path("models", args.model)))
         if "git" in model:
-            cchpth = cache_path(hashable(model["git"]), "git")
-            if not os.path.exists(cchpth):
-                os.makedirs(cchpth, exist_ok=True)
-
-            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]["origin"]).path)[0])[-1]
+            cchpth, repo = get_model_repo_cache_path(model, create=True)
             repopath = os.path.join(cchpth, repo)
             if os.path.exists(os.path.join(repopath, ".git")):
                 print("Repo directory for {} already exists in {}".format(args.model, os.path.join(repopath, ".git")))
@@ -142,11 +122,15 @@ def fetch(args):
 
 
 def run(args):
-    model = json.load(open(repo_path("models", args.model[0])))
-    dataset = json.load(open(repo_path("datasets", args.dataset[0])))
-    model["run"]
-    return 127
-
+    model_name = args.model[0]
+    dataset_name = args.dataset[0]
+    model = json.load(open(repo_path("models", model_name)))
+    dataset = json.load(open(repo_path("datasets", dataset_name)))
+    executor = ContextExecutor({"model_name":model_name, "dataset_name":dataset_name}, model, dataset)
+    # Runs only on the first set of commands. 
+    # TODO: Find a use scenario when we need more the one set of commands
+    executor.execute(next(iter(model['run'].values())), context={}, dryrun=args.dryrun) 
+    return 0
 
 def set_cache(pth):
     if pth:
