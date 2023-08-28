@@ -35,50 +35,104 @@ def cache_path(name, kind):
     return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
 
+def fetch_fragment(fragment, link=None, path=None):
+    cchpth = cache_path(fragment["url"], "url")
+    os.makedirs(cchpth, exist_ok=True)
+
+    base, fname = os.path.split(fragment["url"])
+    lfname = os.path.join(cchpth, fname)
+
+    if link:
+        # create soft link (hard links don't work across devices and/or mount points)
+        try:
+            os.symlink(link, os.path.join(cchpth, lfname))
+        except FileExistsError:
+            print("File or link already exists:", lfname)
+
+    elif path:
+        shutil.copy(path, cchpth, follow_symlinks=False)
+
+    else:  # must attemp downloading
+        if not os.path.exists(lfname):
+            wget(fragment["url"], "-q", "-P", cchpth)
+
+    # if it's TAR file and output doesnt exist
+    if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
+        shutil.unpack_archive(lfname, cchpth, format="tar")
+        # tar("-C", cchpth, "-xf", lfname)
+
+
+def hashable(dct):
+    "Create hashable string by  normalizing a JSON-serializable dictionary"
+    # return the same dictionary with sorted keys
+    return json.dumps({k: dct[k] for k in sorted(dct.keys())})
+
+
 def fetch(args):
     if args.model:
         model = json.load(open(repo_path("models", args.model)))
         if "git" in model:
-            cchpth = cache_path(model["git"], "git")
+            cchpth = cache_path(hashable(model["git"]), "git")
             if not os.path.exists(cchpth):
                 os.makedirs(cchpth, exist_ok=True)
 
-            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]).path)[0])[-1]
-            if os.path.exists(os.path.join(cchpth, repo, ".git")):
-                print("Repo directory for {} already exists in {}".format(args.model, os.path.join(cchpth, repo, ".git")))
+            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]["origin"]).path)[0])[-1]
+            repopath = os.path.join(cchpth, repo)
+            if os.path.exists(os.path.join(repopath, ".git")):
+                print("Repo directory for {} already exists in {}".format(args.model, os.path.join(repopath, ".git")))
 
             else:
-                if git("clone", model["git"], os.path.join(cchpth, repo)):
+                if git("clone", model["git"]["origin"], "--tags", os.path.join(cchpth, repo)):
                     logging.error("Failed cloning repo for model " + args.model)
                     return 127
 
+                else:  # cloning was successful
+                    for dtl, prf in (("branch", ""), ("tag", "tags/"), ("commit", "")):
+                        if dtl in model["git"]:  # extra detail present
+                            curdir = os.getcwd()
+                            os.chdir(repopath)
+                            retcod = git("checkout", prf + model["git"][dtl])
+                            os.chdir(curdir)
+                            if retcod:
+                                print("Checking out {} {} for model {} failed.".format(dtl, model["git"][dtl], args.model))
+                                return 127
+                            else:
+                                print("Checked out", dtl, model["git"][dtl])
+
     elif args.dataset:
+        if args.link and args.path:
+            print("Both links and paths specified. Ignoring paths and using links only.")
+
         dataset = json.load(open(repo_path("datasets", args.dataset)))
-        if "url" in dataset:
-            cchpth = cache_path(dataset["url"], "url")
-            os.makedirs(cchpth, exist_ok=True)
 
-            base, fname = os.path.split(dataset["url"])
-            lfname = os.path.join(cchpth, fname)
-
-            if args.link:
-                # create soft link (hard links don't work across devices and/or mount points)
-                os.symlink(args.link, os.path.join(cchpth, lfname))
-
-            elif args.path:
-                shutil.copy(args.path, cchpth, follow_symlinks=False)
-
-            else:  # must attemp downloading
-                if not os.path.exists(lfname):
-                    wget(dataset["url"], "-q", "-P", cchpth)
-
-            # if it's TAR file and output doesnt exist
-            if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
-                tar("-C", cchpth, "-xf", lfname)
-
+        fragments = dataset["fragments"]
+        for attr in "link", "path":
+            lorp = getattr(args, attr)
+            if lorp:
+                if len(lorp) != len(fragments):
+                    print("Mismatch in number of links/paths:", len(lorp), "and data set fragments:", len(fragments))
+                    return 127
+                break
         else:
-            print("Missing URL for data set", args.dataset)
+            attr = ""  # no links or paths options found in arguments
+
+        d = dict()
+        missing_url = False
+        for i, fragment in enumerate(fragments):
+            if 'url' in fragment:
+                if attr:
+                    d[attr] = getattr(args, attr)[i]
+                fetch_fragment(fragment, **d)
+
+            else:
+                print("Missing URL for data set", "'" + args.dataset + "'", "fragment", i,
+                    "" if "id" not in fragment else "'" + fragment["id"] + "'")
+                missing_url = True
+
+        if missing_url:
             return 127
+
+        return 0
 
     else:
         print("Please secify what to fetch: model or data set.")

@@ -5,8 +5,4 @@
 # single line multi-import, line length
 ignore = E401,E501
 
-exclude =
-.git
-__pycache__
-etc
-var/cache
+exclude = .git,__pycache__,etc,var/sabath/cache
