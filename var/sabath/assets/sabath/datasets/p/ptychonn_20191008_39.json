@@ -4,6 +4,7 @@
     {
       "id": "labels",
       "url": "https://github.com/mcherukara/PtychoNN/raw/master/data/20191008_39_amp_pha_10nm_full.npy",
+      "type" : "file",
       "size": 849379456,
       "checksum": {
           "md5": "bbaee965b410204f1048a3ef5711855a",
@@ -13,6 +14,7 @@
     },{
       "id": "data",
       "url": "https://github.com/mcherukara/PtychoNN/raw/master/data/20191008_39_diff.npz",
+      "type" : "file",
       "size": 588494609,
       "checksum": {
           "md5": "6ae7c56c85bbc96acfed4449ac45e34d",

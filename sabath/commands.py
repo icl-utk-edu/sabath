@@ -45,7 +45,7 @@ def fetch_fragment(fragment, link=None, path=None):
     if link:
         # create soft link (hard links don't work across devices and/or mount points)
         try:
-            os.symlink(link, os.path.join(cchpth, lfname))
+            os.symlink(link, os.path.join(cchpth, lfname))  
         except FileExistsError:
             print("File or link already exists:", lfname)
 
@@ -55,12 +55,22 @@ def fetch_fragment(fragment, link=None, path=None):
     else:  # must attemp downloading
         if not os.path.exists(lfname):
             wget(fragment["url"], "-q", "-P", cchpth)
-
-    # if it's TAR file and output doesnt exist
-    if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
-        shutil.unpack_archive(lfname, cchpth, format="tar")
-        # tar("-C", cchpth, "-xf", lfname)
-
+        f_type = fragment.get('type')
+        # TODO: Add checks if downloads and extracts are complete 
+        if f_type == "file_list":
+            # Assuming that linking and copying point to downloaded and extracted 
+            # dataset so doing that only here
+            # We don't know how the file list will be retrieved in the future
+            # so using local rather than external file
+            wget('-i', lfname, "-q", "-P", cchpth)
+        elif f_type == "archive":
+            # FIXME: if the archive do not have top level directory all 
+            #        files will be extracted loose, so the directory check 
+            #        will not work
+            # if not os.path.exists(lfname[:-4]):
+            
+            # It can guess the archive type
+            shutil.unpack_archive(lfname, cchpth)
 
 def hashable(dct):
     "Create hashable string by  normalizing a JSON-serializable dictionary"
