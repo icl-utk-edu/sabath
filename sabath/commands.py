@@ -140,12 +140,37 @@ def fetch(args):
 
     return 0
 
-
 def run(args):
+    # Load the model and dataset configurations
     model = json.load(open(repo_path("models", args.model[0])))
     dataset = json.load(open(repo_path("datasets", args.dataset[0])))
-    model["run"]
-    return 127
+    
+    env_vars = model.get('env_vars', {})
+    for var, value in env_vars.items():
+        if value.startswith('$'):
+            os.environ[var] = os.environ.get(value.strip('$'), '')
+        else:
+            os.environ[var] = value
+        print(f"Set environment variable: {var} = {os.environ[var]}")
+
+    cchpth = cache_path(hashable(model["git"]), "git")
+
+    repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]["origin"]).path)[0])[-1]
+    model_path = os.path.join(cchpth, repo)
+
+    dataset_fragment = dataset["fragments"][0]
+    dataset_path = cache_path(dataset_fragment["url"], "url")
+    
+    commands = model["run"].get(args.dataset[0], [])
+    for cmd in commands:
+        cmd = cmd.replace("{model_dir}", model_path)
+        cmd = cmd.replace("{data_dir}", dataset_path)
+        result = os.system(cmd)
+        if result != 0:
+            print(f"Command '{cmd}' failed with exit code {result}")
+            return result
+
+    return 0
 
 
 def set_cache(pth):

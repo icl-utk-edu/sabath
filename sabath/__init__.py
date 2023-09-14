@@ -12,7 +12,7 @@ if root is None:
 
 cache = os.path.join(root, "var", "sabath", "cache")
 
-logging.basicConfig(filename=os.path.join(cache, "sabath.log"), encoding="utf-8", level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
+logging.basicConfig(filename=os.path.join(cache, "sabath.log"), level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s")
 
 __all__ = ["cache", "root"]
 

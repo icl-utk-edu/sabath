@@ -13,22 +13,26 @@
     "HOROVOD_CUDA_HOME": "$CUDA_HOME",
     "HOROVOD_WITH_TENSORFLOW": "1"
   },
-  "git": "https://github.com/sparticlesteve/cosmoflow-benchmark.git",
-  "forkts": [{
-    "git": ["https://github.com/tokey-tahmid/cosmoflow-benchmark.git"]
-  }],
+  "git": {
+    "origin": "https://github.com/sparticlesteve/cosmoflow-benchmark"
+  },
+  "forks": [
+    {
+      "git": ["https://github.com/tokey-tahmid/cosmoflow-benchmark.git"]
+    }
+  ],
   "run": {
     "cosmoUniverse_2019_05_4parE_tf_v2_mini": [
-      "sed -i 's!data_dir: .*!data_dir: \"{sabath.dataset}/cosmoUniverse_2019_05_4parE_tf_v2_mini\"!' configs/cosmo.yaml",
-      "sed -i 's!n_train: .*!n_train: 1024!' configs/cosmo.yaml",
-      "sed -i 's!n_valid: .*!n_valid: 1024!' configs/cosmo.yaml",
-      "{python} train.py configs/cosmo.yaml"
+      "sed -i 's!data_dir: .*!data_dir: \"{data_dir}/cosmoUniverse_2019_05_4parE_tf_v2_mini\"!' {model_dir}/configs/cosmo.yaml",
+      "sed -i 's!n_train: .*!n_train: 1024!' {model_dir}/configs/cosmo.yaml",
+      "sed -i 's!n_valid: .*!n_valid: 1024!' {model_dir}/configs/cosmo.yaml",
+      "python {model_dir}/train.py {model_dir}/configs/cosmo.yaml"
     ],
     "cosmoUniverse_2019_05_4parE_tf_v2": [
-      "sed -i 's!data_dir: .*!data_dir: \"{sabath.dataset}/cosmoUniverse_2019_05_4parE_tf_v2\"!' configs/cosmo.yaml",
-      "sed -i 's!n_train: .*!n_train: 524288!' configs/cosmo.yaml",
-      "sed -i 's!n_valid: .*!n_valid: 65536!' configs/cosmo.yaml",
-      "{python} train.py configs/cosmo.yaml"
+      "sed -i 's!data_dir: .*!data_dir: \"{data_dir}/cosmoUniverse_2019_05_4parE_tf_v2\"!' {model_dir}/configs/cosmo.yaml",
+      "sed -i 's!n_train: .*!n_train: 524288!' {model_dir}/configs/cosmo.yaml",
+      "sed -i 's!n_valid: .*!n_valid: 65536!' {model_dir}/configs/cosmo.yaml",
+      "python {model_dir}/train.py {model_dir}/configs/cosmo.yaml"
     ]
   }
 }
