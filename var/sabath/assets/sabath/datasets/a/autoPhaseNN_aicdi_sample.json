@@ -1,0 +1,11 @@
+{
+  "name" : "autoPhaseNN_aicdi_sample",
+  "fragments" : [
+    {
+      "id" : "main",
+      "url" : "https://github.com/YudongYao/AutoPhaseNN/raw/main/TF2/aicdi_data.txt",
+      "type" : "file_list",
+      "limit" : 100
+    }
+  ]
+}

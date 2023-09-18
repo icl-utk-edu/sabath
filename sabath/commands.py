@@ -11,6 +11,8 @@ SABATH commands
 
 
 import hashlib, json, logging, os, subprocess, shutil, sys, urllib.parse
+import tempfile
+import itertools
 import sabath
 
 
@@ -35,8 +37,11 @@ def cache_path(name, kind):
     return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
 
+
+_fragment_unique_fields = ('url', 'type', 'limit')
 def fetch_fragment(fragment, link=None, path=None):
-    cchpth = cache_path(fragment["url"], "url")
+    fragment_unique_str = ':'.join([str(fragment.get(field, '')) for field in _fragment_unique_fields])
+    cchpth = cache_path(fragment_unique_str, "url")
     os.makedirs(cchpth, exist_ok=True)
 
     base, fname = os.path.split(fragment["url"])
@@ -62,7 +67,23 @@ def fetch_fragment(fragment, link=None, path=None):
             # dataset so doing that only here
             # We don't know how the file list will be retrieved in the future
             # so using local rather than external file
+            limit = fragment.get('limit')
+            if limit:
+                # Limit the number of downloaded files, take from top
+                # Replacing original file, as it is tied to single
+                # dataset only
+                # TODO: add option to do random sampling
+                limit = int(limit)
+                tmp_fh= tempfile.NamedTemporaryFile()
+                with open(lfname, 'rb') as file_list_fh:
+                    for line in itertools.islice(file_list_fh, limit):
+                        tmp_fh.write(line)
+                    tmp_fh.flush()
+                shutil.copy(tmp_fh.name, lfname)
+                tmp_fh.close()
+
             wget('-i', lfname, "-q", "-P", cchpth)
+
         elif f_type == "archive":
             # FIXME: if the archive do not have top level directory all 
             #        files will be extracted loose, so the directory check 
