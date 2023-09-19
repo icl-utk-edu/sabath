@@ -19,7 +19,7 @@ def _get_fragment_path(fragment: Mapping):
     if os.path.splitext(fname)[-1] == ".tar":
         fname = fname[:-4]
     lfname = os.path.join(cchpth, fname)
-    return lfname
+    return cchpth, lfname
 
 def _get_repo_path(model: Mapping):
     cchpth, repo = get_model_repo_cache_path(model, create=False)
@@ -34,9 +34,14 @@ def _compile_dataset_fragments(dataset : Mapping):
             fragment_id = fragment['id']
             if fragment_id in dataset_context:
                 logging.warning("In dataset %s there are multiple fragments with id: %s", dataset['name'], fragment_id)
-            dataset_context[fragment['id']] = _get_fragment_path(fragment)
+            fragment_dir, fragment_path =  _get_fragment_path(fragment)
+            dataset_context[fragment['id']] = fragment_path
+            dataset_context[fragment['id']+'.dir'] = fragment_dir
+
     else:
-        dataset_context['main'] = _get_fragment_path()
+        fragment_dir, fragment_path =  _get_fragment_path(fragment)
+        dataset_context['main'] = fragment_path
+        dataset_context['main.dir'] = fragment_dir
     return dataset_context 
 
 class ContextExecutor:
