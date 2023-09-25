@@ -7,9 +7,9 @@
   "git" : {"origin": "https://github.com/Presciman/PtychoNN-torch"},
   "run" : {
     "ptychonn_20191008_39" : [
-      "sed -i 's!data_path =.*!data_path = \"{sabath.dataset}/20191008_39_diff.npz\"!' train_mpi.py",
-      "sed -i 's!label_path =.*!label_path = \"{sabath.dataset}/20191008_39_amp_pha_10nm_full.npy\"!' train_mpi.py",
-      "{python} mpirun -np 1 python3 -u train_mpi.py --epochs 1"
+      "sed 's!data_path =.*!data_path = \"{dataset.data}\"!' {source}/train_mpi.py > train_mpi.py",
+      "sed -i 's!label_path =.*!label_path = \"{dataset.labels}\"!' train_mpi.py",
+      "mpirun -np 1 python3 -u train_mpi.py --epochs 1 --model_save_path ./"
     ]
   }
 }

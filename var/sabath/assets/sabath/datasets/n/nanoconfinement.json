@@ -1,0 +1,20 @@
+{
+    "name": "nanoconfinement_4050",
+    "fragments": [
+        {
+            "id": "train",
+            "url": "https://github.com/softmaterialslab/nanoconfinement-md/raw/master/python/surrogate_samplesize/all_data_4050/data_dump_density_preprocessed_train.pk",
+            "type": "file"
+        },
+        {
+            "id": "test",
+            "url": "https://github.com/softmaterialslab/nanoconfinement-md/raw/master/python/surrogate_samplesize/all_data_4050/data_dump_density_preprocessed_test.pk",
+            "type": "file"
+        },
+        {
+            "id": "scaler",
+            "url": "https://github.com/softmaterialslab/nanoconfinement-md/raw/master/python/surrogate_samplesize/all_data_4050/scaler_new.pkl",
+            "type": "file"
+        }
+    ]
+}
