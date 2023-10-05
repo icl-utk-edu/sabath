@@ -74,7 +74,7 @@ class ContextExecutor:
         for command in commands:
             command = context.apply(command)
             if re.match("\{[^ ]\}", command):
-                logging.waning("Failed to substitute all template parameters: '%s'", command)
+                logging.warning("Failed to substitute all template parameters: '%s'", command)
             
             if dryrun:
                 logging.info("Executing [dry run]: '%s'", command)
