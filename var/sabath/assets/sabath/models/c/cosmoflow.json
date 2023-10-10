@@ -23,16 +23,16 @@
   ],
   "run": {
     "cosmoUniverse_2019_05_4parE_tf_v2_mini": [
-      "sed -i 's!data_dir: .*!data_dir: \"{data_dir}/cosmoUniverse_2019_05_4parE_tf_v2_mini\"!' {model_dir}/configs/cosmo.yaml",
-      "sed -i 's!n_train: .*!n_train: 1024!' {model_dir}/configs/cosmo.yaml",
-      "sed -i 's!n_valid: .*!n_valid: 1024!' {model_dir}/configs/cosmo.yaml",
-      "python {model_dir}/train.py {model_dir}/configs/cosmo.yaml"
+      "sed -i 's!data_dir: .*!data_dir: \"{dataset}/cosmoUniverse_2019_05_4parE_tf_v2_mini\"!' {source}/configs/cosmo.yaml",
+      "sed -i 's!n_train: .*!n_train: 1024!' {source}/configs/cosmo.yaml",
+      "sed -i 's!n_valid: .*!n_valid: 1024!' {source}/configs/cosmo.yaml",
+      "python {source}/train.py {source}/configs/cosmo.yaml"
     ],
     "cosmoUniverse_2019_05_4parE_tf_v2": [
-      "sed -i 's!data_dir: .*!data_dir: \"{data_dir}/cosmoUniverse_2019_05_4parE_tf_v2\"!' {model_dir}/configs/cosmo.yaml",
-      "sed -i 's!n_train: .*!n_train: 524288!' {model_dir}/configs/cosmo.yaml",
-      "sed -i 's!n_valid: .*!n_valid: 65536!' {model_dir}/configs/cosmo.yaml",
-      "python {model_dir}/train.py {model_dir}/configs/cosmo.yaml"
+      "sed -i 's!data_dir: .*!data_dir: \"{dataset}/cosmoUniverse_2019_05_4parE_tf_v2\"!' {source}/configs/cosmo.yaml",
+      "sed -i 's!n_train: .*!n_train: 524288!' {source}/configs/cosmo.yaml",
+      "sed -i 's!n_valid: .*!n_valid: 65536!' {source}/configs/cosmo.yaml",
+      "python {source}/train.py {source}/configs/cosmo.yaml"
     ]
   }
 }
