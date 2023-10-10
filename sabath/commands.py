@@ -10,9 +10,13 @@ SABATH commands
 """
 
 
-import hashlib, json, logging, os, subprocess, shutil, sys, urllib.parse
-import sabath
 
+import hashlib, json, logging, os, subprocess, shutil, sys, urllib.parse
+import tempfile
+import itertools
+import sabath
+from .executors import ContextExecutor
+from .utils import cache_path, get_fragment_cache_path, get_model_repo_cache_path
 
 def git(cmd, *args):
     return subprocess.Popen(("git", cmd) + args, executable="git").wait()
@@ -35,8 +39,11 @@ def cache_path(name, kind):
     return os.path.join(sabath.cache, dgst[:2], dgst[2:], kind)
 
 
+
+_fragment_unique_fields = ('url', 'type', 'limit')
 def fetch_fragment(fragment, link=None, path=None):
-    cchpth = cache_path(fragment["url"], "url")
+    fragment_unique_str = ':'.join([str(fragment.get(field, '')) for field in _fragment_unique_fields])
+    cchpth = cache_path(fragment_unique_str, "url")
     os.makedirs(cchpth, exist_ok=True)
 
     base, fname = os.path.split(fragment["url"])
@@ -45,7 +52,7 @@ def fetch_fragment(fragment, link=None, path=None):
     if link:
         # create soft link (hard links don't work across devices and/or mount points)
         try:
-            os.symlink(link, os.path.join(cchpth, lfname))
+            os.symlink(link, os.path.join(cchpth, lfname))  
         except FileExistsError:
             print("File or link already exists:", lfname)
 
@@ -55,12 +62,38 @@ def fetch_fragment(fragment, link=None, path=None):
     else:  # must attemp downloading
         if not os.path.exists(lfname):
             wget(fragment["url"], "-q", "-P", cchpth)
+        f_type = fragment.get('type')
+        # TODO: Add checks if downloads and extracts are complete 
+        if f_type == "file_list":
+            # Assuming that linking and copying point to downloaded and extracted 
+            # dataset so doing that only here
+            # We don't know how the file list will be retrieved in the future
+            # so using local rather than external file
+            limit = fragment.get('limit')
+            if limit:
+                # Limit the number of downloaded files, take from top
+                # Replacing original file, as it is tied to single
+                # dataset only
+                # TODO: add option to do random sampling
+                limit = int(limit)
+                tmp_fh= tempfile.NamedTemporaryFile()
+                with open(lfname, 'rb') as file_list_fh:
+                    for line in itertools.islice(file_list_fh, limit):
+                        tmp_fh.write(line)
+                    tmp_fh.flush()
+                shutil.copy(tmp_fh.name, lfname)
+                tmp_fh.close()
 
-    # if it's TAR file and output doesnt exist
-    if os.path.splitext(fname)[-1] == ".tar" and not os.path.exists(lfname[:-4]):
-        shutil.unpack_archive(lfname, cchpth, format="tar")
-        # tar("-C", cchpth, "-xf", lfname)
+            wget('-i', lfname, "-q", "-P", cchpth)
 
+        elif f_type == "archive":
+            # FIXME: if the archive do not have top level directory all 
+            #        files will be extracted loose, so the directory check 
+            #        will not work
+            # if not os.path.exists(lfname[:-4]):
+            
+            # It can guess the archive type
+            shutil.unpack_archive(lfname, cchpth)
 
 def hashable(dct):
     "Create hashable string by  normalizing a JSON-serializable dictionary"
@@ -72,11 +105,7 @@ def fetch(args):
     if args.model:
         model = json.load(open(repo_path("models", args.model)))
         if "git" in model:
-            cchpth = cache_path(hashable(model["git"]), "git")
-            if not os.path.exists(cchpth):
-                os.makedirs(cchpth, exist_ok=True)
-
-            repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]["origin"]).path)[0])[-1]
+            cchpth, repo = get_model_repo_cache_path(model, create=True)
             repopath = os.path.join(cchpth, repo)
             if os.path.exists(os.path.join(repopath, ".git")):
                 print("Repo directory for {} already exists in {}".format(args.model, os.path.join(repopath, ".git")))
@@ -140,38 +169,17 @@ def fetch(args):
 
     return 0
 
+
 def run(args):
-    # Load the model and dataset configurations
-    model = json.load(open(repo_path("models", args.model[0])))
-    dataset = json.load(open(repo_path("datasets", args.dataset[0])))
-    
-    env_vars = model.get('env_vars', {})
-    for var, value in env_vars.items():
-        if value.startswith('$'):
-            os.environ[var] = os.environ.get(value.strip('$'), '')
-        else:
-            os.environ[var] = value
-        print(f"Set environment variable: {var} = {os.environ[var]}")
-
-    cchpth = cache_path(hashable(model["git"]), "git")
-
-    repo = os.path.split(os.path.splitext(urllib.parse.urlparse(model["git"]["origin"]).path)[0])[-1]
-    model_path = os.path.join(cchpth, repo)
-
-    dataset_fragment = dataset["fragments"][0]
-    dataset_path = cache_path(dataset_fragment["url"], "url")
-    
-    commands = model["run"].get(args.dataset[0], [])
-    for cmd in commands:
-        cmd = cmd.replace("{model_dir}", model_path)
-        cmd = cmd.replace("{data_dir}", dataset_path)
-        result = os.system(cmd)
-        if result != 0:
-            print(f"Command '{cmd}' failed with exit code {result}")
-            return result
-
+    model_name = args.model[0]
+    dataset_name = args.dataset[0]
+    model = json.load(open(repo_path("models", model_name)))
+    dataset = json.load(open(repo_path("datasets", dataset_name)))
+    executor = ContextExecutor({"model_name":model_name, "dataset_name":dataset_name}, model, dataset)
+    # Runs only on the first set of commands. 
+    # TODO: Find a use scenario when we need more the one set of commands
+    executor.execute(next(iter(model['run'].values())), context={}, dryrun=args.dryrun) 
     return 0
-
 
 def set_cache(pth):
     if pth:
