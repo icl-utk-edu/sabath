@@ -1,0 +1,30 @@
+{
+    "abstract": "Nanoconfinement surrogate model isis DL-based approach which gives direct inversion of the 3D BCDI data from the far-field measurement to the real space image. By incoorporating the forward physical model of the coherent diffraction imaging process, the model is trained with only measured diffraction patterns without needing real space images.",
+    "description": "Nanoconfinement surrogate written in Python on top of TensorFlow with the Keras API.",
+    "name": "Nanoconfinement",
+    "homepage": "https://nanohub.org/resources/nanoconfinement",
+    "references": [
+        "https://doi.org/10.1016/j.jocs.2020.101107"
+    ],
+    "git": {
+        "origin": "https://github.com/softmaterialslab/nanoconfinement-md"
+    },
+    "run": {
+        "autophasenn": [
+            "jupyter-nbconvert --config 'empty_nonexistent_dummy.py' --to python --output-dir . {source}/python/surrogate_samplesize/Ions_surrogate_training_excluderandom.ipynb",
+            "grep -v 'google' Ions_surrogate_training_excluderandom.py > Ions_surrogate_training_excluderandom.py.tmp",           
+            "grep -v 'drive.mount' Ions_surrogate_training_excluderandom.py.tmp > Ions_surrogate_training_excluderandom.py",
+            "grep -v 'ipython' Ions_surrogate_training_excluderandom.py > Ions_surrogate_training_excluderandom.py.tmp",
+            "grep -v '^[%!]' Ions_surrogate_training_excluderandom.py.tmp > Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!file_path=.*!file_path = \"\"!' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!data_dump_density_preprocessed_train.pk!{dataset.train}!' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!data_dump_density_preprocessed_test.pk!{dataset.test}!' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!scaler_new.pkl!{dataset.scaler}!' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!^file_path_model.*!file_path_model = \"./\"!' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!^model.summary()!print(model.summary())!' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!optimizers.Adam!optimizers.legacy.Adam!g' Ions_surrogate_training_excluderandom.py",
+            "sed -i 's!^plt.show()!plt.savefig(\"summary.png\"); exit()!' Ions_surrogate_training_excluderandom.py",
+            "python Ions_surrogate_training_excluderandom.py"
+        ]
+    }
+}

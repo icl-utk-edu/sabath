@@ -1,0 +1,23 @@
+{
+    "abstract": "AutoPhaseNN is DL-based approach which gives direct inversion of the 3D BCDI data from the far-field measurement to the real space image. By incoorporating the forward physical model of the coherent diffraction imaging process, the model is trained with only measured diffraction patterns without needing real space images.",
+    "description": "AutoPhaseNN is written in Python on top of TensorFlow with the Keras API.",
+    "name": "AutoPhaseNN",
+    "homepage": "https://github.com/YudongYao/AutoPhaseNN",
+    "references": [
+        "https://doi.org/10.1038/s41524-022-00803-w"
+    ],
+    "git": {
+        "origin": "https://github.com/YudongYao/AutoPhaseNN"
+    },
+    "run": {
+        "autophasenn": [
+            "jupyter-nbconvert --config 'empty_nonexistent_dummy.py' --to python --output-dir . {source}/TF2/prep_upsamp_3Ddata.ipynb",
+            "sed -i 's!data_folder =.*!data_folder = \"{dataset.main.dir}/\"!' prep_upsamp_3Ddata.py",
+            "sed 's!^module .*$!!' {source}/TF2/lcrc_run_single.sh > lcrc_run_single.sh",
+            "sed -i 's!^source activate.*!!' lcrc_run_single.sh",
+            "sed -i 's!SCRIPT=.*!SCRIPT={source}/TF2/train_network_unsup_3D.py!' lcrc_run_single.sh",
+            "python prep_upsamp_3Ddata.py",
+            "bash lcrc_run_single.sh"
+        ]
+    }
+}
