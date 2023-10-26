@@ -1,0 +1,52 @@
+{
+  "abstract": "miniWeatherML is a machine learning project focused on weather prediction, utilizing advanced numerical methods and high-performance computing resources.",
+  "description": "miniWeatherML is an open-source project that demonstrates the use of machine learning techniques in weather prediction, leveraging high-performance computing with MPI and CUDA for parallel processing.",
+  "name": "miniWeatherML",
+  "homepage": "https://github.com/mrnorman/miniWeatherML",
+  "references": [],
+  "requirements": {
+    "python": ">=3.8",
+    "pip": [
+      "hdf5",
+      "curl",
+      "zlib",
+      "netcdf4=1.5.3",
+      "autoconf",
+      "automake",
+      "libtool",
+      "pkg-config",
+      "yaml-cpp"
+    ],
+    "system_modules": [
+      "gcc/9.5.0",
+      "cuda/11.8.0",
+      "cmake/3.26.3",
+      "openmpi/4.1.2"
+    ]
+  },
+  "env_vars": {
+    "CC": "mpicc",
+    "FC": "mpif90",
+    "CXX": "mpic++",
+    "YAKL_ARCH": "CUDA",
+    "CMAKE_INCLUDE_PATH": "$CONDA_PREFIX/pnetcdf/include:$CONDA_PREFIX/include",
+    "CMAKE_LIBRARY_PATH": "$CONDA_PREFIX/pnetcdf/lib:$CONDA_PREFIX/lib",
+    "YAKL_CUDA_FLAGS": "-DMW_GPU_AWARE_MPI -DHAVE_MPI -O3 -arch sm_70 --use_fast_math -DYAKL_PROFILE -ccbin mpic++",
+    "YAKL_F90_FLAGS": "-O2 -ffree-line-length-none -DSCREAM_DOUBLE_PRECISION",
+    "MW_LINK_FLAGS": "-lnetcdf -lpnetcdf"
+  },
+  "git": {
+    "origin": "https://github.com/mrnorman/miniWeatherML.git",
+    "PnetCDF": "https://github.com/Parallel-NetCDF/PnetCDF.git"
+  },
+  "run": {
+    "miniWeatherML_run": [
+      "cd {source}",
+      "git submodule update --init",
+      "cd {source}/build",
+      "{source}/build/cmakescript.sh {source}/experiments/community_benchmark",
+      "make",
+      "mpirun -np 4 {source}/build/driver {source}/build/inputs/input_euler3d_1024x1024x100.yaml"
+    ]
+  }
+}
