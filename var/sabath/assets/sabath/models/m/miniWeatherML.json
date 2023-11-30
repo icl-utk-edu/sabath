@@ -40,13 +40,29 @@
     "PnetCDF": "https://github.com/Parallel-NetCDF/PnetCDF.git"
   },
   "run": {
-    "miniWeatherML_run": [
-      "cd {source}",
-      "git submodule update --init",
-      "cd {source}/build",
-      "{source}/build/cmakescript.sh {source}/experiments/community_benchmark",
-      "make",
-      "mpirun -np 4 {source}/build/driver {source}/build/inputs/input_euler3d_1024x1024x100.yaml"
+    "community_benchmark": [
+      "cd {source} && git submodule update --init",
+      "cd {source}/build && ./cmakescript.sh {source}/experiments/community_benchmark",
+      "cd {source}/build && make",
+      "mpirun -np 4 {source}/build/driver {dataset.community_benchmark}"
+    ],
+    "simple_city": [
+      "cd {source} && git submodule update --init",
+      "cd {source}/build && ./cmakescript.sh {source}/experiments/simple_city",
+      "cd {source}/build && make",
+      "mpirun -np 4 {source}/build/driver {dataset.simple_city}"
+    ],
+    "supercell_example": [
+      "cd {source} && git submodule update --init",
+      "cd {source}/build && ./cmakescript.sh {source}/experiments/supercell_example",
+      "cd {source}/build && make",
+      "mpirun -np 4 {source}/build/driver {dataset.supercell_example}"
+    ],
+    "supercell_kessler_surrogate": [
+      "cd {source} && git submodule update --init",
+      "cd {source}/build && ./cmakescript.sh {source}/experiments/supercell_kessler_surrogate",
+      "cd {source}/build && make",
+      "mpirun -np 4 {source}/build/driver {dataset.supercell_kessler_surrogate}"
     ]
   }
 }
