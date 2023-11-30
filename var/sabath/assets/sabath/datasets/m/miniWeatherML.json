@@ -1,0 +1,25 @@
+{
+  "name": "miniWeatherML",
+  "fragments": [
+    {
+      "id": "community_benchmark",
+      "url": "https://github.com/mrnorman/miniWeatherML/blob/main/experiments/community_benchmark/inputs/input_euler3d.yaml",
+      "type": "file"
+    },
+    {
+      "id": "simple_city",
+      "url": "https://github.com/mrnorman/miniWeatherML/blob/main/experiments/simple_city/inputs/input_building.yaml",
+      "type": "file"
+    },
+    {
+      "id": "supercell_example",
+      "url": "https://github.com/mrnorman/miniWeatherML/blob/main/experiments/supercell_example/inputs/input_euler3d.yaml",
+      "type": "file"
+    },
+    {
+      "id": "supercell_kessler_surrogate",
+      "url": "https://github.com/mrnorman/miniWeatherML/blob/main/experiments/supercell_kessler_surrogate/inputs/input_euler3d.yaml",
+      "type": "file"
+    }
+  ]
+}
